@@ -81,4 +81,22 @@ inline void Stall() {
   }
 }
 
+inline void RadioConfig(RF24 *radio) {
+
+  // Configure as slave in the communication protocol
+  radio->begin();
+  radio->setRetries(retryDelay, retryCount);
+  radio->setPayloadSize(payloadSize);
+  radio->openWritingPipe(pipes[1]);
+  radio->openReadingPipe(1,pipes[0]);
+  radio->setChannel(radioChannel);
+  radio->enableDynamicPayloads();
+  radio->setAutoAck(true);
+  radio->setDataRate(dataRate);
+  
+  radio->startListening();
+  radio->printDetails();
+  
+}
+
 #endif // __NANO_RFID_HAL_H__

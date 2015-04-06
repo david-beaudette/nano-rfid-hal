@@ -1,19 +1,17 @@
-/* La Fabrique
+/** La Fabrique
 
    Project hardware abstraction layer 
    by David Beaudette
    
    Constants and functions that depend on the circuit built around the Arduino.
    
-*/
+**/
 
 #ifndef __NANO_RFID_HAL_H__
 #define __NANO_RFID_HAL_H__
 
-#include "RF24.h"  // For radio parameter definitions
-
 // GPIO pin numbers
-const int redLedPin   = 3;      // Red LED
+const int redLedPin   = 8;      // Red LED
 const int grnLedPin   = 4;      // Green LED
 const int radioCsnPin = 5;      // NRF24L01+ CSN signal
 const int radioCePin  = 6;      // NRF24L01+ CE signal
@@ -22,7 +20,7 @@ const int rfResetPin  = 9;      // RC522 reset signal
 const int rfSdaPin    = 10;     // RC522 SDA signal
 
 // Serial communication rate
-const int serialRate  = 115200;
+const long int serialRate  = 115200;
 
 // Other program constants
 const int quickFlash = 500;    // duration in ms for quickly flashing a LED
@@ -40,13 +38,45 @@ enum sys_state_t {ENABLED       = 0,
                   IDLE          = 3,
                   TRIGGEREDONCE = 4};
 
-// Radio configuration
+// Definition of commands                  
+#define CMD_AUTO        0xA0
+#define CMD_ENABLE      0xA1
+#define CMD_DISABLE     0xA2
+#define CMD_DUMPLOGGING 0xA3
+#define CMD_UPDATETABLE 0xA4
+#define CMD_MEMORYCHECK 0xA5
+#define CMD_MEMORYCLEAR 0xA6
+
+// Definition of reply messages
+#define REPLY_OK        0xAF
+#define REPLY_ERROR     0xA0
+
+#ifdef __RF24_H__                  
+// Radio configuration (only if radio header is included in build)
 const uint64_t pipes[2]        = {0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL};
 const uint8_t radioChannel     = 0x4c;
 const uint8_t payloadSize      = 10;
 const int retryDelay           = 15;
 const int retryCount           = 15;
 const rf24_datarate_e dataRate = RF24_1MBPS;
+
+inline void RadioConfig(RF24 *radio) {
+  // Set radio parameters
+  radio->begin();
+  radio->setRetries(retryDelay, retryCount);
+  radio->setPayloadSize(payloadSize);
+  radio->openWritingPipe(pipes[1]);
+  radio->openReadingPipe(1,pipes[0]);
+  radio->setChannel(radioChannel);
+  radio->enableDynamicPayloads();
+  radio->setAutoAck(true);
+  radio->setDataRate(dataRate);
+  
+  radio->startListening();
+  radio->printDetails();
+  
+}
+#endif // __RF24_H__
 
 void SetPins();
 void FlashLed(const int pinNum, const int duration_ms, int num_times);
@@ -81,22 +111,5 @@ inline void Stall() {
   }
 }
 
-inline void RadioConfig(RF24 *radio) {
-
-  // Configure as slave in the communication protocol
-  radio->begin();
-  radio->setRetries(retryDelay, retryCount);
-  radio->setPayloadSize(payloadSize);
-  radio->openWritingPipe(pipes[1]);
-  radio->openReadingPipe(1,pipes[0]);
-  radio->setChannel(radioChannel);
-  radio->enableDynamicPayloads();
-  radio->setAutoAck(true);
-  radio->setDataRate(dataRate);
-  
-  radio->startListening();
-  radio->printDetails();
-  
-}
 
 #endif // __NANO_RFID_HAL_H__

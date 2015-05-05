@@ -38,6 +38,12 @@ enum sys_state_t {ENABLED       = 0,
                   IDLE          = 3,
                   TRIGGEREDONCE = 4};
 
+// Activation mode variable is one the following:  
+//  0 - Single:   One valid card required 
+//  1 - Double:   Two valid cards required
+enum act_mode_t {SINGLE      = 0, 
+                 DOUBLE      = 1};
+
 // Definition of commands                  
 #define CMD_AUTO        0xA0
 #define CMD_ENABLE      0xA1
@@ -46,6 +52,9 @@ enum sys_state_t {ENABLED       = 0,
 #define CMD_UPDATETABLE 0xA4
 #define CMD_MEMORYCHECK 0xA5
 #define CMD_MEMORYCLEAR 0xA6
+#define CMD_DOUBLEACT   0xA7
+#define CMD_SIMPLEACT   0xA8
+#define CMD_CHECK       0xA9
 
 // Definition of reply messages
 #define REPLY_OK        0xAF
@@ -54,20 +63,19 @@ enum sys_state_t {ENABLED       = 0,
 #ifdef __RF24_H__                  
 // Radio configuration (only if radio header is included in build)
 const uint64_t pipes[2]        = {0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL};
-const uint8_t radioChannel     = 0x4c;
 const uint8_t payloadSize      = 10;
 const int retryDelay           = 15;
 const int retryCount           = 15;
 const rf24_datarate_e dataRate = RF24_1MBPS;
 
-inline void RadioConfig(RF24 *radio) {
+inline void RadioConfig(RF24 *radio, uint8_t channel) {
   // Set radio parameters
   radio->begin();
   radio->setRetries(retryDelay, retryCount);
   radio->setPayloadSize(payloadSize);
   radio->openWritingPipe(pipes[1]);
   radio->openReadingPipe(1,pipes[0]);
-  radio->setChannel(radioChannel);
+  radio->setChannel(channel);
   radio->enableDynamicPayloads();
   radio->setAutoAck(true);
   radio->setDataRate(dataRate);

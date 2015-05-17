@@ -56,6 +56,7 @@ enum act_mode_t {SINGLE      = 0,
 #define CMD_DOUBLEACT   0xA7
 #define CMD_SIMPLEACT   0xA8
 #define CMD_CHECK       0xA9
+#define CMD_ERASELOG    0xB0
 
 // Definition of reply messages
 #define REPLY_OK        0xAF
@@ -64,7 +65,7 @@ enum act_mode_t {SINGLE      = 0,
 #ifdef __RF24_H__                  
 // Radio configuration (only if radio header is included in build)
 const uint64_t pipes[2]        = {0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL};
-const uint8_t payloadSize      = 10;
+const uint8_t payloadSize      = 12;
 const int retryDelay           = 15;
 const int retryCount           = 15;
 const rf24_datarate_e dataRate = RF24_1MBPS;

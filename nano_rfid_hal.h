@@ -23,9 +23,11 @@ const int rfSdaPin    = 10;     // RC522 SDA signal
 const long int serialRate  = 115200;
 
 // Other program constants
-const int quickFlash = 250;   // duration in ms for quickly flashing a LED
-const int slowFlash  = 500;   // duration in ms for slowly flashing a LED
-const int loopRate   =   1;   // duration in ms for the main program loop
+const int quickFlash      =    500;   // duration in ms for quickly flashing a LED
+const int slowFlash       =   1000;   // duration in ms for slowly flashing a LED
+const int loopRate        =      1;   // duration in ms for the main program loop
+const int cardReadDelay   =   1000;   // duration in ms before checking for another card
+const int blinkPeriod     =  30000;   // period in ms for green led blinking
 
 // State variable is one the following state:  
 //  0 - Enabled: As commanded by server: relay activated until told otherwise
@@ -33,11 +35,13 @@ const int loopRate   =   1;   // duration in ms for the main program loop
 //  2 - Activated: Valid RFID triggered: relay activated until valid RFID triggers
 //  3 - Idle: Relay deactivated, wait for card or server command
 //  4 - TriggeredOnce: In dual RFID activation mode, valid RFID triggered: waiting for a second one
+//  5 - Error: A fatal error was encountered
 enum sys_state_t {ENABLED       = 0, 
                   DISABLED      = 1, 
                   ACTIVATED     = 2,
                   IDLE          = 3,
-                  TRIGGEREDONCE = 4};
+                  TRIGGEREDONCE = 4,
+                  ERROR         = 5};
 
 // Activation mode variable is one the following:  
 //  0 - Single:   One valid card required 
@@ -103,6 +107,7 @@ inline void SetPins() {
   digitalWrite(grnLedPin, LOW);
 }
 
+// Delay-based versions (processor busy while flashing)  
 inline void FlashLed(const int pinNum, const int duration_ms, int num_times) {
   for(int i = 0; i < num_times; i++) {
     digitalWrite(pinNum, HIGH);

@@ -23,11 +23,12 @@ const int rfSdaPin    = 10;     // RC522 SDA signal
 const long int serialRate  = 115200;
 
 // Other program constants
-const int quickFlash      =    500;   // duration in ms for quickly flashing a LED
-const int slowFlash       =   1000;   // duration in ms for slowly flashing a LED
-const int loopRate        =      1;   // duration in ms for the main program loop
-const int cardReadDelay   =   1000;   // duration in ms before checking for another card
-const int blinkPeriod     =  30000;   // period in ms for green led blinking
+const int quickFlash        =    500;   // duration in ms for quickly flashing a LED
+const int slowFlash         =   1000;   // duration in ms for slowly flashing a LED
+const int loopRate          =      1;   // duration in ms for the main program loop
+const int cardReadDelay     =   1500;   // duration in ms before checking for another card
+const int blinkPeriod       =  30000;   // period in ms for green led blinking
+const int doorEnableTime_ms =   8000;   // duration in ms before de-activating the relay after activation
 
 // State variable is one the following state:  
 //  0 - Enabled: As commanded by server: relay activated until told otherwise

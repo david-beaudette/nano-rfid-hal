@@ -18,6 +18,7 @@ const int radioCePin  = 6;      // NRF24L01+ CE signal
 const int relayPin    = 7;      // Relay
 const int rfResetPin  = 9;      // RC522 reset signal
 const int rfSdaPin    = 10;     // RC522 SDA signal
+const int spiEpromPin = 19;     // SPI EEPROM chip enable
 
 // Serial communication rate
 const long int serialRate  = 115200;
